@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<title>2014 ワールドカップ ブラジル大会 予測プログラム</title>
+<script src="./jquery.js" type="text/javascript"></script>
+<script type="text/javascript">
+var GAME_DATA = {
+	1 : {
+		name : "グループA",
+		list : {
+			100 : {
+				rank : 4,
+				name : "ブラジル",
+				image: "Brazil.png"
+			},
+			101 : {
+				rank : 20,
+				name : "クロアチア",
+				image: "Croatia.png"
+			},
+			102 : {
+				rank : 19,
+				name : "メキシコ",
+				image: "Mexico.png"
+			},
+			103 : {
+				rank : 50,
+				name : "カメルーン",
+				image: "Cameroon.png"
+			}
+		}
+	},
+	2 : {
+		name : "グループB",
+		list : {
+			100 : {
+				rank : 1,
+				name : "スペイン",
+				image: "Spain.png"
+			},
+			101 : {
+				rank : 15,
+				name : "オランダ",
+				image: "Netherlands.png"
+			},
+			102 : {
+				rank : 13,
+				name : "チリ",
+				image: "Chile.png"
+			},
+			103 : {
+				rank : 59,
+				name : "オーストラリア",
+				image: "Australia.png"
+			}
+		}
+	},
+	3 : {
+		name : "グループC",
+		list : {
+			100 : {
+				rank : 5,
+				name : "コロンビア",
+				image: "Colombia.png"
+			},
+			101 : {
+				rank : 10,
+				name : "ギリシャ",
+				image: "greece.png"
+			},
+			102 : {
+				rank : 21,
+				name : "コートジボワール",
+				image: "Cote_d'Ivoire.png"
+			},
+			103 : {
+				rank : 47,
+				name : "日本",
+				image: "Japan.png"
+			}
+		}
+	},
+	4 : {
+		name : "グループD",
+		list : {
+			100 : {
+				rank : 6,
+				name : "ウルグアイ",
+				image: "Uruguay.png"
+			},
+			101 : {
+				rank : 34,
+				name : "コスタリカ",
+				image: "Costa-rica.png"
+			},
+			102 : {
+				rank : 11,
+				name : "イングランド",
+				image: "England.png"
+			},
+			103 : {
+				rank : 9,
+				name : "イタリア",
+				image: "Italy.png"
+			}
+		}
+	},
+	5 : {
+		name : "グループE",
+		list : {
+			100 : {
+				rank : 8,
+				name : "スイス",
+				image: "Switzerland.png"
+			},
+			101 : {
+				rank : 28,
+				name : "エクアドル",
+				image: "Ecuador.png"
+			},
+			102 : {
+				rank : 16,
+				name : "フランス",
+				image: "France.png"
+			},
+			103 : {
+				rank : 30,
+				name : "ホンジュラス",
+				image: "Honduras.png"
+			}
+		}
+	},
+	6 : {
+		name : "グループF",
+		list : {
+			100 : {
+				rank : 7,
+				name : "アルゼンチン",
+				image: "Argentina.png"
+			},
+			101 : {
+				rank : 25,
+				name : "ボスニア・ヘルツェゴビナ",
+				image: "Bosnia-and-Herzegovina.png"
+			},
+			102 : {
+				rank : 37,
+				name : "イラン",
+				image: "Iran.png"
+			},
+			103 : {
+				rank : 44,
+				name : "ナイジェリア",
+				image: "Nigeria.png"
+			}
+		}
+	},
+	7 : {
+		name : "グループG",
+		list : {
+			100 : {
+				rank : 2,
+				name : "ドイツ",
+				image: "Germany.png"
+			},
+			101 : {
+				rank : 3,
+				name : "ポルトガル",
+				image: "Portugal.png"
+			},
+			102 : {
+				rank : 38,
+				name : "ガーナ",
+				image: "Ghana.png"
+			},
+			103 : {
+				rank : 14,
+				name : "アメリカ",
+				image: "USA.png"
+			}
+		}
+	},
+	8 : {
+		name : "グループH",
+		list : {
+			100 : {
+				rank : 12,
+				name : "ベルギー",
+				image: "Belgium.png"
+			},
+			101 : {
+				rank : 25,
+				name : "アルジェリア",
+				image: "Algeria.png"
+			},
+			102 : {
+				rank : 18,
+				name : "ロシア",
+				image: "Russia.png"
+			},
+			103 : {
+				rank : 55,
+				name : "韓国",
+				image: "South-Korea.png"
+			}
+		}
+	}
+};
+// 決勝リーグ組み合わせ
+var GAME_TOURNAMENT = [
+	"1_1-2_2",		// A1 B2
+	"3_1-4_2",		// C1 D2
+	"5_1-6_2",		// E1 F2
+	"7_1-8_2",		// G1 H2
+	"1_2-2_1",		// A2 B1
+	"3_2-4_1",		// C2 D1
+	"5_2-6_1",		// E2 F1
+	"7_2-8_1",		// G2 H1
+];
+jQuery(document).ready(function(){
+	var $box = jQuery("#tournament");
+	var TERM = {};
+	var GAME_STAGE = 0;		// 1:グループリーグ , 2:決勝トーナメント
+	var GAME_GROUP = 1;		// グループリーグ
+	var GAME_BATTLE_NODE = {};
+	var GAME_TERM = [];		// 対戦チーム情報
+	var GAME_TIMER = 0;
+	var GAME_START_STATE = 0;
+	var GAME_TOURNAMENT_ID = {};		// 決勝進出データ
+	var GAME_TOURNAMENT_DATA = [];
+	var GAME_TOURNAMENT_ROW = [];
+	var GAME_TOURNAMENT_RESULT = [];
+	var GAME_TOURNAMENT_POINT = [];
+	var GAME_TOUNAMENT_NUM = 0;
+	var ANIMATE_QUEUE = [];
+	var DATA_GAME_TIME = 90;
+	var DATA_GAME_SPEED = 5;
+	// init
+	$box.append('<div id="result"><input type="button" id="battle" value="試合開始"></div>');
+	$box.append('<div id="tournament_box"></div>');
+	var $result = jQuery("#result");
+	var $tournament = jQuery("#tournament_box");
+	for(var i in GAME_DATA){
+		var group = GAME_DATA[i];
+		var $grp = jQuery('<div class="group"></div>');
+		$grp.append('<div class="group_title">'+group["name"]+'</div>');
+		for(var key in group["list"]){
+			var cn = group["list"][key];
+			var html = '';
+			var id = i+"_"+key;
+			html = '<div class="country" id="country'+id+'"><img src="icon/'+cn["image"]+'"> '+cn["name"]+'<div class="score"></div></div>';
+			$grp.append(html);
+			
+			cn["id"] = id;
+			cn["total_score"] = 0;
+			cn["group_point"] = 0;
+			TERM[id] = cn;
+		}
+		$box.append($grp);
+	}
+	
+	$box.find("#battle").click(function(){
+		var html = '';
+		html += '<div class="title"></div><div class="term1"></div><div class="term2"></div><div class="message"></div>';
+		$result.html(html);
+		
+		// グループリーグ開始
+		GAME_STAGE = 1;
+		GAME_GROUP = 1;
+		GAME_TOURNAMENT_ID = {};
+		setGroup();
+		return false;
+	});
+	
+	function setGroup(){
+		if(GAME_STAGE == 1 && GAME_DATA[GAME_GROUP]){
+			GAME_BATTLE_NODE = [];
+			var group = GAME_DATA[GAME_GROUP];
+			
+			$result.find(".title").html(group["name"]);
+			var ary = {};
+			for(var i in group["list"]){
+				for(var j in group["list"]){
+					var t1 = GAME_GROUP+"_"+i;
+					var t2 = GAME_GROUP+"_"+j;
+					var key = t1+"-"+t2;
+					var key2 = t2+"-"+t1;
+					if(i != j && !ary[key] && !ary[key2]){
+						ary[key] = key;
+					}
+				}
+			}
+			for(var i in ary){
+				GAME_BATTLE_NODE.push(ary[i]);
+			}
+			startGame();
+		}else{
+			// グループリーグ終了
+			GAME_STAGE = 2;
+			// 決勝進出組み合わせ作成
+			GAME_TOURNAMENT_DATA = [];
+			GAME_TOURNAMENT_ROW = [];
+			GAME_TOURNAMENT_RESULT = [];
+			for(var i in GAME_TOURNAMENT){
+				var t = GAME_TOURNAMENT[i].split("-");
+				GAME_TOURNAMENT_ROW.push(GAME_TOURNAMENT_ID[t[0]]);
+				GAME_TOURNAMENT_ROW.push(GAME_TOURNAMENT_ID[t[1]]);
+			}
+			GAME_BATTLE_NODE = [];
+			for(var i =0;i<GAME_TOURNAMENT_ROW.length;i+=2){
+				GAME_BATTLE_NODE.push(GAME_TOURNAMENT_ROW[i]+"-"+GAME_TOURNAMENT_ROW[i+1]);
+			}
+			
+			// ボックス設置
+			var n = GAME_TOURNAMENT_ROW.length;
+			var h = 0;
+			var height = 120;
+			while(n >= 1){
+				h ++;
+				n /= 2;
+			};
+			var total_height = h * height;
+			$tournament.height(total_height);
+			
+			var tc = GAME_TOURNAMENT_ROW.length;
+			var width = Math.floor($tournament.width() / tc);
+			for(var i in GAME_TOURNAMENT_ROW){
+				var d1 = TERM[GAME_TOURNAMENT_ROW[i]];
+				var $box = jQuery('<div class="t_term" id="t_term'+GAME_TOURNAMENT_ROW[i]+'"></div>');
+				$box.html('<span class="image"><img src="icon/'+d1["image"]+'"></span><span class="name">'+d1["name"]+'</span>');
+				
+				$box.css({
+					width : width,
+					left : i * width,
+					top : total_height - 50
+				});
+				$tournament.append($box);
+			}
+			// リーグ表作成
+			var game = GAME_TOURNAMENT_ROW.length;
+			var hi = 0;
+			var h = total_height - 60;
+			GAME_TOURNAMENT_POINT = [];
+			GAME_TOUNAMENT_NUM = 0;
+			while(game){
+				var ht = Math.floor((height / 2) + ((height / 6) * (hi + 1)));
+				h -= ht;
+				game = Math.floor(game / 2);
+				if(game >= 1){
+					var x = (Math.pow(2,(hi)) * Math.floor(width / 2));
+					var w = (Math.pow(2,(hi)) * width);
+					for(var i=0;i<game;i++){
+						var data = {
+							left : x,
+							top: h,
+							width : w,
+							height: ht
+						};
+						GAME_TOURNAMENT_POINT.push(data);
+						
+						var $box = jQuery('<div class="tl"></div>');
+						$box.css({
+							width : data["width"],
+							height : data["height"],
+							left : data["left"],
+							top : data["top"]
+						});
+						$tournament.append($box);
+						x += (w + (width * Math.pow(2,(hi))));
+					}
+				}else{
+					break;
+				}
+				hi ++;
+			}
+			$result.find(".title").html("決勝リーグ");
+			startGame();
+		}
+	}
+	function makeTournament(){
+		// 決勝進出組み合わせ作成
+		if(GAME_TOURNAMENT_DATA.length > 0){
+			GAME_BATTLE_NODE = [];
+			for(var i =0;i<GAME_TOURNAMENT_DATA.length;i+=2){
+				GAME_BATTLE_NODE.push(GAME_TOURNAMENT_DATA[i]+"-"+GAME_TOURNAMENT_DATA[i+1]);
+			}
+			GAME_TOURNAMENT_DATA = [];
+			startGame();
+		// 試合終了
+		}else{
+			GAME_STAGE = 3;
+			GAME_START_STATE = 0;
+		}
+	}
+	function startGame(){
+		if(GAME_BATTLE_NODE.length > 0){
+			var b = new String(GAME_BATTLE_NODE.slice(0,1));
+			var t = b.split("-");
+			GAME_BATTLE_NODE.shift();
+			setTerm(t[0],t[1]);
+			// 決勝リーグ
+			if(GAME_STAGE == 2){
+				/*var $b = jQuery('<div class="kr"><div class="term1"></div><div class="term2"></div></div>');
+				var d1 = TERM[t[0]];
+				$b.find(".term1").html('<span class="image"><img src="icon/'+d1["image"]+'"></span><span class="name">'+d1["name"]+'</span><span class="score"></span>');
+				var d2 = TERM[t[1]];
+				$b.find(".term2").html('<span class="image"><img src="icon/'+d2["image"]+'"></span><span class="name">'+d2["name"]+'</span><span class="score"></span>');
+				$tournament.append($b);*/
+			}
+		}else{
+			// グループリーグ
+			if(GAME_STAGE == 1){
+				// 決勝リーグ進出者決定
+				var data = getTounamentTerm(GAME_GROUP);
+				var id1 = data[0];
+				var id2 = data[1];
+				
+				GAME_TOURNAMENT_ID[GAME_GROUP+"_1"] = id1;
+				GAME_TOURNAMENT_ID[GAME_GROUP+"_2"] = id2;
+				jQuery("#country"+id1).find(".score").html('勝ち点 : '+TERM[id1]["group_point"] + ' 予選1位');
+				jQuery("#country"+id2).find(".score").html('勝ち点 : '+TERM[id2]["group_point"] + ' 予選2位');
+				// 次のグループ
+				GAME_GROUP ++;
+				setGroup();
+			// 決勝リーグ
+			}else if(GAME_STAGE == 2){
+				// ゲーム終了
+				if(GAME_TOURNAMENT_DATA.length == 1){
+					var d1 = TERM[GAME_TOURNAMENT_DATA[0]];
+					var $b =  jQuery('<div class="end"><div class="title">優勝</div><div class="term"></div></div>');
+					$b.find(".term").html('<span class="image"><img src="icon/'+d1["image"]+'"></span><span class="name">'+d1["name"]+'</span>');
+					$result.html($b);
+					return ;
+				}else if(GAME_TOURNAMENT_DATA.length <= 2){
+					$result.find(".title").html("決勝リーグ 決勝");
+				}else if(GAME_TOURNAMENT_DATA.length <= 4){
+					$result.find(".title").html("決勝リーグ 準決勝");
+				}else if(GAME_TOURNAMENT_DATA.length <= 8){
+					$result.find(".title").html("決勝リーグ 準々決勝");
+				}
+				makeTournament();
+			}
+		}
+	}
+	function getTounamentTerm(g){
+		var group = GAME_DATA[g];
+		var list = [];
+		for(var i in group["list"]){
+			var id1 = g+"_"+i;
+			var ind = 0;
+			var data1 = TERM[id1];
+			for(var key in list){
+				var id2 = list[key];
+				var data2 = TERM[id2];
+				if(
+					(data1["group_point"] > data2["group_point"])
+					|| 
+					((data1["group_point"] == data2["group_point"]) && (data1["total_score"] >= data2["total_score"]))
+				){
+					break;
+				}
+				ind = key + 1;
+			}
+			list.splice(ind,0,id1);
+		}
+		return list;
+	}
+	function setTerm(code1,code2){
+		var d1 = TERM[code1];
+		d1["score"] = 0;
+		$result.find(".term1").html('<div class="image"><img src="icon/'+d1["image"]+'"></div><div class="name">'+d1["name"]+'</div><div class="score"></div>');
+		var d2 = TERM[code2];
+		d2["score"] = 0;
+		$result.find(".term2").html('<div class="image"><img src="icon/'+d2["image"]+'"></div><div class="name">'+d2["name"]+'</div><div class="score"></div>');
+		GAME_TERM = [d1,d2];
+		GAME_START_STATE = 1;
+	}
+	setInterval(function(){
+		if(ANIMATE_QUEUE.length > 0){
+			
+		}else if(GAME_START_STATE == 1){
+			// 試合終了
+			if(GAME_TIMER >= DATA_GAME_TIME){
+				var id1 = GAME_TERM[0]["id"];
+				var id2 = GAME_TERM[1]["id"];
+				
+				// グループリーグ
+				if(GAME_STAGE == 1){
+					// 勝ち点取得
+					if(GAME_TERM[0]["score"] > GAME_TERM[1]["score"]){
+						TERM[id1]["group_point"] += 3;
+					}else if(GAME_TERM[0]["score"] < GAME_TERM[1]["score"]){
+						TERM[id2]["group_point"] += 3;
+					}else{
+						TERM[id1]["group_point"] += 1;
+						TERM[id2]["group_point"] += 1;
+					}
+					TERM[id1]["total_score"] += GAME_TERM[0]["score"];
+					TERM[id2]["total_score"] += GAME_TERM[1]["score"];
+					
+					jQuery("#country"+id1).find(".score").html('勝ち点 : '+TERM[id1]["group_point"]);
+					jQuery("#country"+id2).find(".score").html('勝ち点 : '+TERM[id2]["group_point"]);
+					
+					GAME_START_STATE = 0;
+					GAME_TIMER = 0;
+					startGame();
+				// 決勝リーグ
+				}else if(GAME_STAGE == 2){
+					var win = id1;
+					// 同点の場合
+					if(GAME_TERM[0]["score"] == GAME_TERM[1]["score"]){
+						if((Math.random() * 100) < 50){
+							GAME_TERM[0]["score"] ++;
+						}else{
+							GAME_TERM[1]["score"] ++;
+						}
+					}
+					$result.find(".term1 .score").html(GAME_TERM[0]["score"]+'点');
+					$result.find(".term2 .score").html(GAME_TERM[1]["score"]+'点');
+					if(GAME_TERM[0]["score"] > GAME_TERM[1]["score"]){
+						GAME_TOURNAMENT_DATA.push(id1);
+						GAME_TOURNAMENT_RESULT.unshift(id2);
+						win = id1;
+					}else{
+						GAME_TOURNAMENT_DATA.push(id2);
+						GAME_TOURNAMENT_RESULT.unshift(id2);
+						win = id2;
+					}
+					
+					$tournament.find(".kr:last .term1 .score").html(GAME_TERM[0]["score"]+"点");
+					$tournament.find(".kr:last .term2 .score").html(GAME_TERM[1]["score"]+"点");
+					// アニメーション
+					var $anima = jQuery("#t_term"+win);
+					var $pos = GAME_TOURNAMENT_POINT[GAME_TOUNAMENT_NUM];
+					$anima
+						.animate({top : Math.floor($pos["top"] - 20)},200,"linear")
+						.animate({left : Math.floor($pos["left"] + Math.floor(($pos["width"] / 2) - ($anima.width() / 2)))},200,"linear",function(){
+							ANIMATE_QUEUE.shift();
+							
+							GAME_START_STATE = 0;
+							GAME_TIMER = 0;
+							startGame();
+						});
+					ANIMATE_QUEUE.push($anima);
+					GAME_TOUNAMENT_NUM ++;
+				}
+			}
+			GAME_TERM[0]["score"] += getScore(GAME_TERM[0]["rank"],GAME_TERM[1]["rank"]);
+			GAME_TERM[1]["score"] += getScore(GAME_TERM[1]["rank"],GAME_TERM[0]["rank"]);
+			
+			$result.find(".term1 .score").html(GAME_TERM[0]["score"]+'点');
+			$result.find(".term2 .score").html(GAME_TERM[1]["score"]+'点');
+			$result.find(".message").html(GAME_TIMER+'分');
+			GAME_TIMER += DATA_GAME_SPEED;
+		}
+	},1);
+	// 点数
+	function getScore(rank1,rank2){
+		var rate = Math.max(Math.min((((rank2 - rank1) + 100 + (Math.random() * 400)) / 5),100));
+		return ((rate / DATA_GAME_TIME) > 1.1) ? 1 : 0;
+	}
+});
+</script>
+<style type="text/css">
+#tournament{
+	width:980px;
+	margin:0 auto;
+	background:#F3F3F3;
+	font-size:12px;
+}
+#tournament .group{
+	line-height:140%;
+	padding:10px;
+	width:210px;
+	float:left;
+	margin:6px;
+	border:solid 1px #999;
+}
+#tournament .group .group_title{
+	font-weight:bold;
+	padding:5px 0;
+}
+#tournament .group .country{
+	padding:5px 10px;
+}
+#tournament .group img{
+	vertical-align:middle;
+}
+#tournament .group .score{
+	padding:0 10px;
+	min-height:18px;
+	text-align:right;
+}
+#result {
+	text-align:center;
+	padding: 10px 0;
+}
+#battle{
+	font-size: 14px;
+	line-height: 20px;
+	padding: 10px;
+	text-align: center;
+	text-decoration: none;
+	line-height: 54px;
+	outline: none;
+	cursor: pointer;
+	border: 1px solid #15aeec;
+	background-color: #49c0f0;
+	background-image: -webkit-linear-gradient(top, #49c0f0, #2cafe3);
+	background-image: linear-gradient(to bottom, #49c0f0, #2cafe3);
+	border-radius: 4px;
+	color: #fff;
+	line-height: 50px;
+	-webkit-transition: none;
+	transition: none;
+	text-shadow: 0 1px 1px rgba(0, 0, 0, .3);
+}
+#battle:hover {
+	border:1px solid #1090c3;
+	background-color: #1ab0ec;
+	background-image: -webkit-linear-gradient(top, #1ab0ec, #1a92c2);
+	background-image: linear-gradient(to bottom, #1ab0ec, #1a92c2);
+}
+#battle:active {
+	background: #1a92c2;
+	box-shadow: inset 0 3px 5px rgba(0, 0, 0, .2);
+	color: #1679a1;
+	text-shadow: 0 1px 1px rgba(255, 255, 255, .5);
+}
+#result .title{
+	font-weight:bold;
+	padding:5px 0;
+}
+#result .term1,#result .term2{
+	width:200px;
+	display:inline-block;
+	*display:inline;
+	*zoom:1;
+}
+#result .message{
+	padding:5px 0;
+}
+#tournament_box{
+	text-align:center;
+	position:relative;
+}
+#tournament_box .tl{
+	border:solid 2px #333333;
+	border-bottom:none;
+	position:absolute;
+}
+#tournament_box .kr{
+	padding:5px 0;
+	border-bottom:solid 1px #333333;
+}
+#tournament_box .kr .term1,
+#tournament_box .kr .term2{
+	width:200px;
+	display:inline-block;
+	*display:inline;
+	*zoom:1;
+	text-align:left;
+}
+
+#tournament_box .t_term{
+	position:absolute;
+	height:50px;
+	z-index: 5;
+}
+#tournament_box .t_term .image{
+	display:block;
+}
+#tournament_box .t_term .name{
+	font-size:10px;
+	line-height: 12px;
+	display: block;
+}
+</style>
+</head>
+<body id="top">
+
+<div id="tournament">
+</div>
+</body>
+</html>
